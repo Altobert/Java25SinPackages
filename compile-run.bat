@@ -2,6 +2,23 @@
 setlocal EnableDelayedExpansion
 cd /d "%~dp0"
 
+set "JAVA25_HOME=D:\java25\jdk-25.0.2_windows-x64\jdk-25.0.2"
+set "JAVAC_CMD=javac"
+set "JAVA_CMD=java"
+set "JAVAC_FLAGS="
+set "JAVA_FLAGS="
+
+if exist "%JAVA25_HOME%\bin\javac.exe" (
+    set "JAVAC_CMD=%JAVA25_HOME%\bin\javac.exe"
+    set "JAVA_CMD=%JAVA25_HOME%\bin\java.exe"
+    set "JAVAC_FLAGS=--enable-preview --source 25"
+    set "JAVA_FLAGS=--enable-preview"
+    echo Usando JDK 25 local: "%JAVA25_HOME%"
+) else (
+    echo Aviso: no se encontro JDK 25 local en "%JAVA25_HOME%".
+    echo Se usaran java/javac del PATH actual.
+)
+
 set "DEFAULT_CAP_DIR=cap03"
 set "CAP_DIR=%DEFAULT_CAP_DIR%"
 set "MAIN_CLASS="
@@ -39,7 +56,7 @@ for /d %%D in (cap*) do (
         if exist "%%D\*.java" (
             if not exist "%BIN_ROOT%\%%D" mkdir "%BIN_ROOT%\%%D"
             pushd "%%D"
-            javac -d "%BIN_ROOT%\%%D" *.java >nul 2>nul
+            "%JAVAC_CMD%" %JAVAC_FLAGS% -d "%BIN_ROOT%\%%D" *.java >nul 2>nul
             if exist "*.class" del /q "*.class"
             popd
         )
@@ -60,7 +77,7 @@ if not defined BIN_CP set "BIN_CP=%OUT_DIR%"
 pushd "%CAP_DIR%"
 
 echo Compilando archivos Java de "%CAP_DIR%"...
-javac -cp "%BIN_CP%" -d "%OUT_DIR%" *.java
+"%JAVAC_CMD%" %JAVAC_FLAGS% -cp "%BIN_CP%" -d "%OUT_DIR%" *.java
 if errorlevel 1 (
     echo Error en la compilacion.
     popd
@@ -88,8 +105,20 @@ if "%MAIN_CLASS%"=="" (
     exit /b 0
 )
 
-echo Ejecutando %MAIN_CLASS%...
-java -cp "%BIN_CP%" %MAIN_CLASS%
+set "RUN_CLASS=%MAIN_CLASS%"
+if "%MAIN_CLASS:.=%"=="%MAIN_CLASS%" (
+    if exist "%MAIN_CLASS%.java" (
+        set "PKG_NAME="
+        for /f "tokens=2" %%P in ('findstr /R /C:"^package " "%MAIN_CLASS%.java"') do set "PKG_NAME=%%P"
+        if defined PKG_NAME (
+            set "PKG_NAME=!PKG_NAME:;=!"
+            set "RUN_CLASS=!PKG_NAME!.%MAIN_CLASS%"
+        )
+    )
+)
+
+echo Ejecutando %RUN_CLASS%...
+"%JAVA_CMD%" %JAVA_FLAGS% -cp "%BIN_CP%" %RUN_CLASS%
 
 popd
 pause
