@@ -16,5 +16,8 @@ float 32 bits // numeros grandes con . decimal
 double // para numeros grandes con . decimal
 char // para almacenar un caracter = 'A';
 
+----- fin tipos de datos primitivos ------
 
+----- inicio tipos de datos estructurados ------
 
+----- fin    tipos de datos estructurados ------
