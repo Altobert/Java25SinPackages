@@ -12,3 +12,8 @@ short = 1990;// -32768 hacia 32767
 
 int 32 bits, puede almacenar numeros mas grandes
 long // numeros muy grandes
+float 32 bits // numeros grandes con . decimal
+double // para numeros grandes con . decimal
+
+
+
