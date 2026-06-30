@@ -7,5 +7,8 @@
 
 Tipos de datos importantes
 byte = 32 // bien
-byte = 1550 // no permite, se desborda 127 to -128
+byte = 1550 // no permite, se desborda -127 to 128
+short = 1990;// -32768 hacia 32767
 
+int 32 bits, puede almacenar numeros mas grandes
+long // numeros muy grandes
